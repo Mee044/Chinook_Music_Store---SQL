@@ -1,0 +1,238 @@
+### Queries and Questions to explore
+
+-- Check for and clean dirty data (no duplicate data in employee table)
+SELECT
+employee_id,
+last_name,
+first_name,
+title,
+reports_to,
+birthdate,
+hire_date,
+address,
+city,
+state,
+country,
+postal_code,
+state,
+country,
+postal_code,
+phone,
+fax,
+email,
+COUNT(*)
+FROM employee
+GROUP BY
+employee_id,
+employee_id,
+last_name,
+first_name,
+title,
+reports_to,
+birthdate,
+hire_date,
+address,
+city,
+state,
+country,
+postal_code,
+state,
+country,
+postal_code,
+phone,
+fax,
+email
+Having COUNT(*)>1;
+
+The result shows no duplicate data
+(Later I moved to clean data in python)
+
+--1-Provide a query showing Customers (just their full names, customer ID and country) who are not in the US.
+SELECT customer_id, first_name as cus_first_name, last_name as cus_last_name, country as cus_not_in_us
+FROM customer
+WHERE country <> 'USA';
+
+--2-Provide a query only showing the Customers from Brazil.
+SELECT customer_id, first_name, last_name, country
+FROM customer
+WHERE country = 'Brazil';
+
+ 
+--3-Provide a query showing the Invoices of customers who are from Brazil. The resultant table should show the customer's full name, Invoice ID, Date of the invoice and billing country.
+SELECT  A.customer_id as customer_id, B.invoice_id as invoice_id, A.first_name as first_name, A.last_name as last_name, B.invoice_date, B.billing_country, A.country as country
+FROM customer A
+INNER JOIN invoice B ON A.customer_id = B.invoice_id
+WHERE country is 'Brazil';
+ 
+--4-Provide a query showing only the Employees who are Sales Agents.
+SELECT *
+FROM employee
+WHERE title like "%Sales%Agent%";
+ 
+--5-Provide a query that shows the invoices associated with each sales agent. The resultant table should include the Sales Agent's full name.
+SELECT I.invoice_id as invoice_id, E.first_name as first_name, E.last_name as last_name, E.title as title
+FROM invoice I
+INNER JOIN customer C ON I.invoice_id = C.customer_id
+INNER JOIN employee E ON E.employee_id = C.support_rep_id
+WHERE title like "%Sales%Agent%";
+ 
+--6-Provide a query that shows the Invoice Total, Customer name, Country and Sale Agent name for all invoices and customers
+
+SELECT C.first_name as customer_first_name, C.last_name as customer_last_name,  E.first_name as employee_first_name, E.last_name as employee_last_name, C.country as country, E.title as title,  I.total as total
+FROM customer C
+FULL JOIN employee E ON C.support_rep_id = E.employee_id
+FULL JOIN invoice I ON C.customer_id = I.invoice_id
+WHERE title like "%Sales%Agent%";
+ 
+--7-How many Invoices were there in 2017 and 2020? What are the respective total sales for each of those years?
+SELECT strftime('%Y', invoice_date) as year, COUNT(invoice_id) as total_count_invoice
+FROM invoice
+--WHERE year BETWEEN '2017' AND '2020'
+WHERE year IN ('2017','2018','2019','2020')
+GROUP BY year
+ORDER BY total_count_invoice ASC;
+  
+--8- Looking at the InvoiceLine table, provide a query that COUNTs the number of line items for each Invoice.
+SELECT invoice_id, COUNT(invoice_line_id) as total_count_invoice_line_id
+FROM invoice_line
+GROUP BY invoice_id
+ORDER BY total_count_invoice_line_id ASC;
+
+--9-Provide a query that includes the track name with each invoice line item.
+SELECT T.name as track_name, I.invoice_line_id as line_id, I.invoice_id as invoice_id, I.unit_price as unit_price, I.quantity as quantity
+FROM invoice_line I
+INNER JOIN track T on invoice_line_id = T.track_id;
+ 
+--10-Provide a query that includes the purchased track name AND artist name with each invoice line item.
+SELECT A.artist_id as artist_id, A.name as artist_name,  T.name as track_name, T.track_id, I.invoice_line_id as invoice_line_id, I.invoice_id as invoice_id, I.unit_price as unit_price, I.quantity as quantity
+FROM invoice_line I
+INNER JOIN track T on invoice_line_id = T.track_id
+INNER JOIN album AL on T.album_id = AL.album_id
+INNER JOIN artist A on AL.artist_id = A.artist_id
+ORDER BY A.name ASC;
+ 
+--11-Provide a query that shows the number of in;voices per country.
+SELECT COUNT(invoice_id) as count_i, C.country as country
+FROM invoice I
+INNER JOIN customer C on C.customer_id = I.customer_id
+GROUP BY c.country
+ORDER BY count_i desc
+limit 10;
+ 
+--12-Provide a query that shows the total number of tracks in each playlist. The Playlist name should be included on the resultant table.
+SELECT P.name as playlist_name, COUNT(track_id) as count_track
+FROM playlist_track PT
+INNER JOIN playlist P on PT.playlist_id = P.playlist_id
+GROUP BY P.name
+ORDER BY count_track desc
+limit 10;
+ 
+--13-Provide a query that shows all the Tracks, but displays no IDs?. The resultant table should include the Album name, Media type and Genre.
+SELECT  T.name as track_name, AL.title as album_name, MT.name as media_type, G.name as genre_name
+FROM album AL
+INNER JOIN track T on AL.album_id = T.album_id
+INNER JOIN media_type MT on T.media_type_id = MT.media_type_id
+INNER Join genre G on G.genre_id = T.genre_id
+limit 10;
+
+--14-Provide a query that shows all Invoices but includes the number of invoice line items
+SELECT  I.invoice_id as invoice_id, COUNT(IL.invoice_line_id) as count_invoice_line_id
+FROM invoice I
+LEFT JOIN invoice_line IL on I.invoice_id = IL.invoice_id
+GROUP BY I.invoice_id
+ORDER BY I.invoice_id;
+ 
+--15-Provide a query that shows total sales made by each sales agent.
+SELECT E.first_name as first_name, E.last_name as last_name, COUNT(*) as total_sales
+FROM employee E
+LEFT JOIN customer C ON  E.employee_id = C.support_rep_id
+LEFT JOIN invoice I on I.customer_id = C.customer_id
+GROUP By employee_id
+ORDER BY invoice_id DESC
+ 
+--16-Provide a query that shows the total sales per country. Which country's customers spent the most?
+SELECT billing_country as country, SUM(total) as highest_sale
+FROM invoice
+GROUP BY billing_country
+ORDER BY 2 DESC
+limit 10;
+ 
+--17-Which sales agent made the most in sales in 2009?
+SELECT E.first_name as first_name, E.last_name as last_name, COUNT(*) as total_sales
+FROM employee E
+LEFT JOIN customer C ON  E.employee_id = C.support_rep_id
+LEFT JOIN invoice I on I.customer_id = C.customer_id
+WHERE substr(i.invoice_date, 0,5)="2009"
+GROUP By employee_id
+ORDER BY invoice_id DESC
+ 
+--18-Which sales agent made the most in sales in 2010?
+SELECT E.first_name as first_name, E.last_name as last_name, COUNT(*) as total_sales
+FROM employee E
+LEFT JOIN customer C ON  E.employee_id = C.support_rep_id
+LEFT JOIN invoice I on I.customer_id = C.customer_id
+WHERE substr(i.invoice_date, 0,5)="2010"
+GROUP By employee_id
+ORDER BY invoice_id DESC
+
+--19-Which sales agent made the most in sales over all?
+SELECT E.first_name as first_name, E.last_name as last_name, COUNT(*) as total_sales
+FROM employee E
+LEFT JOIN customer C ON  E.employee_id = C.support_rep_id
+LEFT JOIN invoice I on I.customer_id = C.customer_id
+GROUP By employee_id
+ORDER BY invoice_id DESC
+ 
+--20-Provide a query that shows the most purchased track of 2013
+SELECT t.name as Track_name,count(*) as Track_sales
+FROM invoice as i
+LEFT JOIN invoice_line as il on il.invoice_id = i.invoice_id
+LEFT JOIN track as t on t.track_id = il.track_id
+WHERE invoice_date in ('2013')
+GROUP BY t.track_id
+ORDER BY 2 desc
+ 
+--21- What is the top 5 most purchased tracks over all
+--Provide a query that shows the top 5 most purchased tracks over all
+SELECT T.name as Track_name ,count(*) as Track_sales
+FROM invoice_line IL
+LEFT JOIN track T on t.track_id = IL.track_id
+GROUP BY T.track_id
+ORDER BY 2 desc
+LIMIT 5;
+ 
+--22- What is the top 3 best selling artists.
+SELECT art.Name as Artist_name ,count(*) as Artist_sales
+FROM invoice_line as i
+LEFT JOIN track as t on i.track_id = i.track_id
+LEFT JOIN album as a on a.album_id = t.album_id
+LEFT JOIN artist as art on art.artist_id = a.artist_id
+GROUP BY art.artist_id
+ORDER BY 2 desc
+LIMIT 3;
+ 
+--23-What is the top 5 best selling albums
+SELECT al.title as title_album ,count(*) as ablum_sales
+FROM invoice_line as i
+LEFT JOIN track as t on i.track_id = i.track_id
+LEFT JOIN album as al on al.album_id = t.album_id
+GROUP BY al.album_id
+ORDER BY 2 desc
+LIMIT 5;
+ 
+
+--24-What is the top 5 best selling albums
+SELECT g.name as genre_name ,count(*) as genre_sales
+FROM invoice_line as i
+LEFT JOIN track as t on i.track_id = i.track_id
+LEFT JOIN genre as g on g.genre_id = t.genre_id
+GROUP BY g.genre_id
+ORDER BY 2 desc
+LIMIT 5;
+
+ 
+
+
+
+
+
