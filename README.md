@@ -3,7 +3,7 @@
 
 ### This database includes tables: 
 invoice, invoice_line, playlist, playlist_track, track, album, artist,
-genre, employee and customer information related to the store's sales. We will use this
+genre, employee and customer information related to the store's sales. I used this
 database and the sqlite3 module in order to explore and answer some questions.
 
 ## Objective
