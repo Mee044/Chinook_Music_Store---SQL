@@ -1,7 +1,8 @@
 # Chinook_Music_Store---SQL
 ### Data Analysis conducted in SQLite. The data in this project isn't proprietary; I am able to share this project.
 
-### This database includes tables: invoice, invoice_line, playlist, playlist_track, track, album, artist,
+### This database includes tables: 
+invoice, invoice_line, playlist, playlist_track, track, album, artist,
 genre, employee and customer information related to the store's sales. We will use this
 database and the sqlite3 module in order to explore and answer some questions.
 
