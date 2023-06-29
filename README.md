@@ -1,4 +1,4 @@
-# Chinook_Music_Store---SQL
+# Chinook_Music_Store-SQL
 ### Data Analysis conducted in SQLite. The data in this project isn't proprietary; I am able to share this project.
 
 ### This database includes tables: 
