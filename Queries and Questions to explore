@@ -45,7 +45,7 @@ email
 Having COUNT(*)>1;
 
 The result shows no duplicate data
-(Later I moved to clean data in python)
+(Later I moved the data to clean in python)
 
 --1-Provide a query showing Customers (just their full names, customer ID and country) who are not in the US.
 SELECT customer_id, first_name as cus_first_name, last_name as cus_last_name, country as cus_not_in_us
